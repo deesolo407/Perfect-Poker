@@ -1,0 +1,62 @@
+import itertools
+
+# Define the deck of cards
+deck = list(itertools.product(['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'], ['♠', '♡', '♢', '♣']))
+
+# Define the rank of each hand
+hand_rank = {'Royal Flush': 10, 'Straight Flush': 9, 'Four of a Kind': 8, 'Full House': 7, 'Flush': 6,
+             'Straight': 5, 'Three of a Kind': 4, 'Two Pair': 3, 'Pair': 2, 'High Card': 1}
+
+# Calculate the rank of a given hand
+def rank_hand(hand):
+    # Check for a flush
+    if len(set(card[1] for card in hand)) == 1:
+        flush = True
+    else:
+        flush = False
+    # Check for a straight
+    values = sorted(['2345678910JQKA'.index(card[0]) for card in hand])
+    if values == [0, 9, 10, 11, 12]:
+        values = [0, 1, 2, 3, 12]
+    straight = all(values[i] == values[0]+i for i in range(1, 5))
+    # Check for a straight flush
+    if flush and straight:
+        if values[0] == 8:
+            return 'Royal Flush'
+        else:
+            return 'Straight Flush'
+    # Check for four of a kind
+    if any(values.count(value) == 4 for value in values):
+        return 'Four of a Kind'
+    # Check for full house
+    if any(values.count(value) == 3 for value in values) and any(values.count(value) == 2 for value in values):
+        return 'Full House'
+    # Check for a flush
+    if flush:
+        return 'Flush'
+    # Check for a straight
+    if straight:
+        return 'Straight'
+    # Check for three of a kind
+    if any(values.count(value) == 3 for value in values):
+        return 'Three of a Kind'
+    # Check for two pair
+    if len(set(value for value in values if values.count(value) == 2)) == 2:
+        return 'Two Pair'
+    # Check for a pair
+    if any(values.count(value) == 2 for value in values):
+        return 'Pair'
+    # High card
+    return 'High Card'
+
+# Simulate all possible outcomes of the remaining cards
+def simulate_remaining_cards(player_cards, community_cards, num_opponents):
+    remaining_cards = list(set(deck) - set(player_cards) - set(community_cards))
+    num_remaining_cards = len(remaining_cards)
+    num_remaining_opponents = num_opponents - 1
+    outcomes = {}
+    for i in range(num_remaining_cards):
+        for j in range(i+1, num_remaining_cards):
+            test_hand = player_cards + [remaining_cards[i], remaining_cards[j]]
+            for k in range(3):
+                test_community_cards = community_cards + remaining_cards[k:k
